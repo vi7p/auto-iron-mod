@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "autoiron",
-  "version": "1.0.0",
+  "version": "${version}",
   "name": "Auto Iron Mod",
-  "description": "Automatically gives iron tools and armor on break or death.",
+  "description": "Automatically equips iron tools and armor.",
   "authors": [
     "Me"
   ],
@@ -15,10 +15,9 @@
       "com.example.ExampleMod"
     ]
   },
-  "mixins": [],
   "depends": {
     "fabricloader": ">=0.15.0",
-    "minecraft": "~1.21",
+    "minecraft": ">=1.21",
     "java": ">=21"
   }
 }
