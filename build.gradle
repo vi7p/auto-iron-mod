@@ -11,6 +11,8 @@ base {
 }
 
 repositories {
+	mavenCentral()
+	maven { url "https://maven.fabricmc.net/" }
 }
 
 dependencies {
@@ -19,6 +21,26 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_api_version)
+}
+
+// Explicitly tell Gradle where your code and resources live
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src/main/java']
+		}
+		resources {
+			srcDirs = ['src/main/resources']
+		}
+	}
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -31,6 +53,7 @@ java {
 	targetCompatibility = JavaVersion.VERSION_21
 }
 
+// Force the jar task to bundle both compiled classes and resources
 jar {
-	inputs.property "archivesName", project.base.archivesName
+	from sourceSets.main.output
 }
