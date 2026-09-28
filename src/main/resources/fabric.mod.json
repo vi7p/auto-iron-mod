@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "autoiron",
-  "version": "${version}",
+  "version": "1.0.0",
   "name": "Auto Iron Mod",
   "description": "Automatically equips iron tools and armor.",
   "authors": [
