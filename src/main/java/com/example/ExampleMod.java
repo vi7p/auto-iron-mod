@@ -12,36 +12,49 @@ public class ExampleMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        System.out.println("[AutoIronMod] Mod loaded and active!");
+
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 if (player.isSpectator() || player.isCreative() || !player.isAlive()) {
                     continue;
                 }
 
-                ensureArmor(player, EquipmentSlot.HEAD, Items.IRON_HELMET);
-                ensureArmor(player, EquipmentSlot.CHEST, Items.IRON_CHESTPLATE);
-                ensureArmor(player, EquipmentSlot.LEGS, Items.IRON_LEGGINGS);
-                ensureArmor(player, EquipmentSlot.FEET, Items.IRON_BOOTS);
+                boolean updated = false;
 
-                ensureTool(player, Items.IRON_SWORD);
-                ensureTool(player, Items.IRON_PICKAXE);
-                ensureTool(player, Items.IRON_AXE);
-                ensureTool(player, Items.IRON_SHOVEL);
+                updated |= ensureArmor(player, EquipmentSlot.HEAD, Items.IRON_HELMET);
+                updated |= ensureArmor(player, EquipmentSlot.CHEST, Items.IRON_CHESTPLATE);
+                updated |= ensureArmor(player, EquipmentSlot.LEGS, Items.IRON_LEGGINGS);
+                updated |= ensureArmor(player, EquipmentSlot.FEET, Items.IRON_BOOTS);
+
+                updated |= ensureTool(player, Items.IRON_SWORD);
+                updated |= ensureTool(player, Items.IRON_PICKAXE);
+                updated |= ensureTool(player, Items.IRON_AXE);
+                updated |= ensureTool(player, Items.IRON_SHOVEL);
+
+                // Force Minecraft to sync inventory updates to the player screen immediately
+                if (updated) {
+                    player.playerScreenHandler.sendContentUpdates();
+                }
             }
         });
     }
 
-    private void ensureArmor(ServerPlayerEntity player, EquipmentSlot slot, Item expectedItem) {
+    private boolean ensureArmor(ServerPlayerEntity player, EquipmentSlot slot, Item expectedItem) {
         ItemStack current = player.getEquippedStack(slot);
         if (current.isEmpty() || !current.isOf(expectedItem)) {
             player.equipStack(slot, new ItemStack(expectedItem));
+            return true;
         }
+        return false;
     }
 
-    private void ensureTool(ServerPlayerEntity player, Item toolItem) {
+    private boolean ensureTool(ServerPlayerEntity player, Item toolItem) {
         if (!hasItemInInventory(player, toolItem)) {
             player.getInventory().insertStack(new ItemStack(toolItem));
+            return true;
         }
+        return false;
     }
 
     private boolean hasItemInInventory(ServerPlayerEntity player, Item item) {
