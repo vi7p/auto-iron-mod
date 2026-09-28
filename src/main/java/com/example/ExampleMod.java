@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class Iron implements ModInitializer {
+public class ExampleMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
