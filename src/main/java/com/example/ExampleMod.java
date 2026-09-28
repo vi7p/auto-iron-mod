@@ -1,30 +1,60 @@
 package com.example;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-import net.minecraft.resources.Identifier;
+public class Iron implements ModInitializer {
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+    @Override
+    public void onInitialize() {
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                if (player.isSpectator() || player.isCreative() || !player.isAlive()) {
+                    continue;
+                }
 
-public class ExampleMod implements ModInitializer {
-	public static final String MOD_ID = "modid";
+                ensureArmor(player, EquipmentSlot.HEAD, Items.IRON_HELMET);
+                ensureArmor(player, EquipmentSlot.CHEST, Items.IRON_CHESTPLATE);
+                ensureArmor(player, EquipmentSlot.LEGS, Items.IRON_LEGGINGS);
+                ensureArmor(player, EquipmentSlot.FEET, Items.IRON_BOOTS);
 
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+                ensureTool(player, Items.IRON_SWORD);
+                ensureTool(player, Items.IRON_PICKAXE);
+                ensureTool(player, Items.IRON_AXE);
+                ensureTool(player, Items.IRON_SHOVEL);
+            }
+        });
+    }
 
-	@Override
-	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+    private void ensureArmor(ServerPlayerEntity player, EquipmentSlot slot, Item expectedItem) {
+        ItemStack current = player.getEquippedStack(slot);
+        if (current.isEmpty() || !current.isOf(expectedItem)) {
+            player.equipStack(slot, new ItemStack(expectedItem));
+        }
+    }
 
-		LOGGER.info("Hello Fabric world!");
-	}
+    private void ensureTool(ServerPlayerEntity player, Item toolItem) {
+        if (!hasItemInInventory(player, toolItem)) {
+            player.getInventory().insertStack(new ItemStack(toolItem));
+        }
+    }
 
-	public static Identifier id(String path) {
-		return Identifier.fromNamespaceAndPath(MOD_ID, path);
-	}
+    private boolean hasItemInInventory(ServerPlayerEntity player, Item item) {
+        for (ItemStack stack : player.getInventory().main) {
+            if (!stack.isEmpty() && stack.isOf(item)) {
+                return true;
+            }
+        }
+        for (ItemStack stack : player.getInventory().offHand) {
+            if (!stack.isEmpty() && stack.isOf(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
