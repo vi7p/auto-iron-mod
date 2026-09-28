@@ -3,11 +3,11 @@ plugins {
 	id 'maven-publish'
 }
 
-version = project.mod_version
-group = project.maven_group
+version = '1.0.0'
+group = 'com.example'
 
 base {
-	archivesName = project.archives_base_name
+	archivesName = 'autoiron'
 }
 
 repositories {
@@ -18,7 +18,7 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Only load lifecycle events to bypass the broken Fabric API biome access-widener
+	// Only load lifecycle events module
 	modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_api_version)
 }
 
