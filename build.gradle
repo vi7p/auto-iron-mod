@@ -23,18 +23,6 @@ dependencies {
 	modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_api_version)
 }
 
-// Explicitly tell Gradle where your code and resources live
-sourceSets {
-	main {
-		java {
-			srcDirs = ['src/main/java']
-		}
-		resources {
-			srcDirs = ['src/main/resources']
-		}
-	}
-}
-
 processResources {
 	inputs.property "version", project.version
 
@@ -51,9 +39,4 @@ java {
 	withSourcesJar()
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
-}
-
-// Force the jar task to bundle both compiled classes and resources
-jar {
-	from sourceSets.main.output
 }
